@@ -1,0 +1,405 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <script data-main="unit" src="vendor/require.js"></script>
+
+        <script id="simplest" type="text/pascal" data-expected="1 2 3">
+            program TestProgram;
+            begin
+                WriteLn(1, 2, 3);
+            end.
+        </script>
+
+        <script id="variable" type="text/pascal" data-expected="2">
+            program TestProgram;
+            var i : Integer;
+                j : Integer;
+            begin
+                i := 1;
+                j := i * 2;
+                WriteLn(j);
+            end.
+        </script>
+
+        <script id="for_loop" type="text/pascal" data-expected="1 2 3 4 5">
+            program TestProgram;
+            var i : Integer;
+            begin
+                for i := 1 to 5 do
+                    WriteLn(i);
+            end.
+        </script>
+
+        <script id="for_downto_loop" type="text/pascal" data-expected="5 4 3 2 1">
+            program TestProgram;
+            var i : Integer;
+            begin
+                for i := 5 downto 1 do
+                    WriteLn(i);
+            end.
+        </script>
+
+        <script id="repeat_loop" type="text/pascal" data-expected="1 2 3 4 5">
+            program TestProgram;
+            var i : Integer;
+            begin
+                i := 1;
+                repeat
+                    WriteLn(i);
+                    i := i + 1;
+                until i > 5;
+            end.
+        </script>
+
+        <script id="while_loop" type="text/pascal" data-expected="1 2 3 4 5">
+            program TestProgram;
+            var i : Integer;
+            begin
+                i := 1;
+                while i <= 5 do
+                    begin
+                        WriteLn(i);
+                        i := i + 1;
+                    end;
+            end.
+        </script>
+
+        <script id="procedure" type="text/pascal" data-expected="1 3 7 123 123">
+            program TestProgram;
+            var i : integer;
+                procedure WriteAndIncrement(di : integer);
+                var j : integer;
+                begin
+                    WriteLn(i);
+                    j := di*2;
+                    i := i + j;
+                end;
+                procedure NoParameters;
+                begin
+                    Writeln(123);
+                end;
+            begin
+                i := 1;
+                WriteAndIncrement(1);
+                WriteAndIncrement(2);
+                WriteAndIncrement(3);
+                NoParameters;
+                NoParameters
+            end.
+        </script>
+
+        <script id="function" type="text/pascal" data-expected="3 6 9 123">
+            program TestProgram;
+            var i : integer;
+                function Triple(i : integer) : integer;
+                begin
+                    Triple := i * 3;
+                end;
+                function NoParameters : integer;
+                begin
+                    NoParameters := 123;
+                end;
+            begin
+                for i := 1 to 3 do
+                    WriteLn(Triple(i));
+                Writeln(NoParameters);
+            end.
+        </script>
+
+        <script id="recursion" type="text/pascal" data-expected="1 1 2 3 5 8 13 21 34 55">
+            program TestProgram;
+            var i : integer;
+                function Fibonacci(i : integer) : integer;
+                begin
+                    if i <= 2 then
+                        Fibonacci := 1
+                    else
+                        Fibonacci := Fibonacci(i - 1) + Fibonacci(i - 2);
+                end;
+            begin
+                for i := 1 to 10 do
+                    WriteLn(Fibonacci(i));
+            end.
+        </script>
+
+        <script id="if" type="text/pascal" data-expected="Smaller Bigger Smaller">
+            program TestProgram;
+            var i, j : integer;
+            begin
+                i := 5;
+                j := 6;
+                { With else }
+                if i < j then
+                    WriteLn('Smaller')
+                else
+                    WriteLn('Bigger');
+                if j < i then
+                    WriteLn('Smaller')
+                else
+                    WriteLn('Bigger');
+                { Without else }
+                if i < j then
+                    WriteLn('Smaller');
+                if j < i then
+                    WriteLn('Smaller');
+            end.
+        </script>
+
+        <script id="array" type="text/pascal" data-expected="100">
+            program TestProgram;
+            var a : array[2..5] of integer;
+            var sum, i : integer;
+            begin
+                a[2] := 10;
+                a[3] := 20;
+                a[4] := 30;
+                a[5] := 40;
+                for i := 2 to 5 do
+                    sum := sum + a[i];
+                Writeln(sum);
+            end.
+        </script>
+
+        <script id="multidimensional_array" type="text/pascal" data-expected="100">
+            program TestProgram;
+            var a : array[2..5,1..2] of integer;
+            var sum, i, j : integer;
+            begin
+                a[2,2] := 10;
+                a[3,1] := 20;
+                a[4,2] := 30;
+                a[5,1] := 40;
+                for i := 2 to 5 do
+                    for j := 1 to 2 do
+                        sum := sum + a[i,j];
+                Writeln(sum);
+            end.
+        </script>
+
+        <script id="complicated_types" type="text/pascal" data-expected="1 2 3 4">
+            program TestProgram;
+            var a : array[1..2] of array[2..3] of integer;
+            var b : array[1..2] of record i : integer end; { Erase of records. }
+            var c : record a : array[1..2] of integer end;
+            var d : array[1..2] of record a : array[1..2] of integer end;
+            begin
+                a[1][2] := 1;
+                b[1].i := 2;
+                c.a[2] := 3;
+                d[2].a[1] := 4;
+                Writeln(a[1][2]);
+                Writeln(b[1].i);
+                Writeln(c.a[2]);
+                Writeln(d[2].a[1]);
+            end.
+        </script>
+
+        <script id="record" type="text/pascal" data-expected="5 6 7">
+            program TestProgram;
+            var r : record
+                        i, j : integer;
+                        r : real;
+                    end;
+            begin
+                r.i := 5;
+                r.j := 6;
+                r.r := 7;
+                Writeln(r.i, r.j, r.r);
+            end.
+        </script>
+
+        <script id="custom_types" type="text/pascal" data-expected="1 2 3 4 5">
+            program TestProgram;
+            type
+                MyInt = integer;
+                Point = record
+                            x, y, z : real
+                        end;
+                Ages = Array[1..5] of real;
+            var
+                i : MyInt;
+                p : Point;
+                a : ages;
+            begin
+                i := 1;
+                p.x := 2;
+                p.y := 3;
+                p.z := 4;
+                a[2] := 5;
+                Writeln(i, p.x, p.y, p.z, a[2]);
+            end.
+        </script>
+
+        <script id="parameters_by_reference" type="text/pascal" data-expected="2 3 3 4">
+            program TestProgram;
+            var a, b, c : integer;
+                procedure Foo(var i, j : integer; k : integer);
+                begin
+                    i := i + 1;
+                    j := j + 1;
+                    k := k + 1;
+                end;
+            begin
+                a := 1;
+                b := 2;
+                c := 3;
+                Foo(a, b, c);
+                WriteLn(a, b, c);
+                Inc(c);
+                WriteLn(c);
+            end.
+        </script>
+
+        <script id="large_parameters" type="text/pascal" data-expected="1 2 3 4 1 2 3 4">
+            program TestProgram;
+            { Pass records, arrays, and arrays of records by value and reference. }
+            type Point = record
+                            x, y : integer;
+                         end;
+                 TenIntegers = array[1..10] of integer;
+                 TenPoints = array[1..10] of Point;
+            var x : Point;
+            var y : TenIntegers;
+            var z : TenPoints;
+                procedure Foo(a : Point; b : TenIntegers; c : TenPoints);
+                begin
+                    WriteLn(a.x, a.y, b[5], c[6].y);
+                end;
+                procedure Bar(var a : Point; var b : TenIntegers; var c : TenPoints);
+                begin
+                    WriteLn(a.x, a.y, b[5], c[6].y);
+                end;
+            begin
+                x.x := 1;
+                x.y := 2;
+                y[5] := 3;
+                z[6].y := 4;
+                Foo(x, y, z);
+                Bar(x, y, z);
+            end.
+        </script>
+
+        <script id="pointer" type="text/pascal" data-expected="7 6 5">
+            program TestProgram;
+            { Linked list stack. }
+            type Element = record
+                              value : integer;
+                              next : ^Element;
+                           end;
+            var head : ^Element;
+                procedure push(var head : ^element; value : integer);
+                var p : ^Element;
+                begin
+                    new(p);
+                    p^.value := value;
+                    p^.next := head;
+                    head := p;
+                end;
+                function pop(var head: ^element) : integer;
+                var p : ^element;
+                begin
+                    if head = nil then
+                        pop := -1
+                    else
+                        begin
+                            p := head;
+                            pop := p^.value;
+                            head := p^.next;
+                            dispose(p);
+                        end;
+                end;
+                procedure print(var head : ^element);
+                var done : boolean;
+                var value : integer;
+                begin
+                    done := false;
+                    while not done do
+                        begin
+                            value := pop(head);
+                            if value = -1 then
+                                done := true
+                            else
+                                Writeln(value);
+                        end;
+                end;
+            begin
+                head := nil;
+                push(head, 5);
+                push(head, 6);
+                push(head, 7);
+                print(head);
+            end.
+        </script>
+
+        <script id="forward_pointer" type="text/pascal" data-expected="5">
+            program TestProgram;
+            { The pointer type references a type that's not yet declared. }
+            type Ptr = ^MyType;
+                MyType = Integer;
+            var p : Ptr;
+            begin
+                New(p);
+                p^ := 5;
+                Writeln(p^);
+            end.
+        </script>
+
+        <script id="typed_const" type="text/pascal" data-expected="42 42 43 4 6 8">
+            program TestProgram;
+            const
+                age1 = 42;
+                age2 : integer = 42;
+                ages : array[1..3] of integer = (3, 5, 7);
+            var
+                i : integer;
+            begin
+                Writeln(age1);
+                Writeln(age2);
+                age2 := age2 + 1;
+                Writeln(age2);
+                for i := 1 to 3 do
+                    begin
+                        ages[i] := ages[i] + 1;
+                        Writeln(ages[i]);
+                    end;
+            end.
+        </script>
+
+        <style>
+            body {
+                font-family: sans-serif;
+                margin: 20px;
+            }
+            th {
+                text-align: left;
+            }
+            th, td {
+                padding-right: 10px;
+            }
+            span.passed {
+                color: #1a1;
+            }
+            span.failure {
+                color: #a11;
+            }
+            .output {
+                padding: 10px;
+                background-color: #ccc;
+            }
+        </style>
+    </head>
+    <body>
+        <table id="results">
+            <thead>
+                <tr>
+                    <th>Test Name</th>
+                    <th>Result</th>
+                    <th>Reason</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </body>
+</html>

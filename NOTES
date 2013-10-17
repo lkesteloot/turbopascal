@@ -1,0 +1,57 @@
+
+Next:
+
+- Nothing.
+
+Optional:
+
+- Make ReadKey block if there's no key.
+    - Would have to shut off VM and start it again when there's a key.
+    - How to get key to ReadKey function?
+    - Function would have to be able to tell Machine that it's interrupted, when call
+        to function (in CSP handler in Machine), you'd have to check the state, not
+        push result on stack, and stop immediately. Later when a key is available
+        you'd have to restart the CSP operation. That's probably easiest. But the
+        stack got popped off for arguments. Could save all that. Or could just push
+        resulting key on stack and continue. Maybe function would pass to ctl
+        a function to call when it's ready to resume, and it would return the
+        right value.
+- Add a way to show/hide debug info from web page.
+- Implement a real heap, with a free list.
+
+Notes:
+
+- To disable caching in Chrome, open devtools, click gear in lower-right, set checkbox.
+- Design of p-machine:
+    - http://cs2.uco.edu/~trt/cs4173/pspec.pdf
+    - Instruction: (8 opcode, 8 op1, 16 op2).
+    - 32k instructions in istore.
+    - data store: elements of 8 bytes each. That's the largest size of any data type.
+        - Heap grows down from the top.
+        - Stack grows up from the bottom.
+    - Registers:
+        - PC (32-bits) points to instruction being executed.
+        - SP (32-bits) points to top of stack.
+        - NP (32-bits) points to bottom of heap.
+        - MP (32-bits) points to bottom of frame:
+            - Return value (rv).
+            - Static link (sl) - link to frame of enclosing procedure.
+            - Dynamic link (dl) - link to calling frame.
+            - Old extreme pointer (ep)
+            - Return address (ra)
+            - Parameters
+            - Locals
+            - Computation
+        - EP (32-bits) location of highest stack for frame.
+            - Not sure why we need this.
+            - Ah, it's to less frequently check collision with new pointer. Can skip this.
+- Design of bytecode object:
+    - istore: array of bytecodes (doubles).
+    - Debug information.
+- Design of p-machine:
+    - istore: array of bytecodes, just use bytecode object.
+    - data store: array of 8-byte values (doubles?).
+        - Stack grows up.
+        - Don't worry about heap, can probably use JavaScript heap.
+    - Registers.
+    - Nothing stored in JavaScript stack. All stored in object so we can restart anytime.

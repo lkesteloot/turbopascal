@@ -1,0 +1,328 @@
+Pascal _ Syntax in BNF Notation
+
+BNF (Backus Naur Form).
+
+pascal_program: 
+   program identifier program_headingopt ; block . 
+
+
+program_heading:  
+   ( identifier_list ) 
+
+
+identifier_list: 
+   identifier  
+   identifier_list , identifier  
+
+
+block:  
+   block1  
+   label_declaration ; block1  
+
+
+block1:  
+   block2  
+   constant_declaration ; block2  
+
+
+block2:  
+   block3  
+   type_declaration ; block3  
+
+
+block3:  
+   block4  
+   variable_declaration ; block4  
+
+
+block4:  
+   block5  
+   proc_and_func_declaration ; block5  
+
+
+block5:  
+   begin statement_list end  
+
+
+label_declaration:  
+   label unsigned_integer  
+   label_declaration , unsigned_integer  
+
+
+constant_declaration:  
+   const  identifier = constant  
+   constant_declaration ;  identifier = constant  
+
+
+type_declaration:  
+   type  identifier = type  
+   type_declaration ;  identifier = type  
+
+
+variable_declaration:  
+   var variableid_list : type  
+   variable_declaration ; variableid_list : type  
+
+
+variableid_list:  
+   identifier  
+   variableid_list ,  identifier  
+
+
+constant:  
+   integer  
+   real 
+   string
+   constid  
+   + constid 
+   TADD_ constid 
+
+
+type:  
+   simple_type  
+   structured_type  
+   ^ typeid  
+
+
+simple_type:  
+   (  identifier_list )  
+   constant ... constant  
+   typeid  
+
+
+structured_type:  
+   array [ index_list ] of type  
+   record field_list end  
+   set of simple_type  
+   file of type  
+   packed structured_type  
+
+
+index_list:  
+   simple_type  
+   index_list , simple_type  
+
+
+field_list:  
+   fixed_part  
+   fixed_part ; variant_part 
+   variant_part 
+
+
+fixed_part:  
+   record_field 
+   fixed_part ; record_field 
+
+
+record_field: 
+   empty 
+   fieldid_list : type   
+
+
+fieldid_list:  
+   identifier  
+   fieldid_list ,  identifier  
+
+
+variant_part: 
+   case tag_field of variant_list 
+
+
+tag_field: 
+   typeid  
+   identifier : typeid  
+
+
+variant_list:  
+   variant 
+   variant_list ; variant 
+
+
+variant: 
+   empty 
+   case_label_list : ( field_list )  
+
+
+case_label_list:  
+   constant  
+   case_label_list , constant  
+
+
+proc_and_func_declaration:  
+   proc_or_func  
+   proc_and_func_declaration ; proc_or_func 
+
+
+proc_or_func:  
+   procedure  identifier parametersopt ;  block_or_forward 
+   function  identifier parametersopt : typeid ; block_or_forward 
+
+
+block_or_forward:  
+   block  
+   forward  
+
+
+parameters:  
+   ( formal_parameter_list )  
+
+
+formal_parameter_list:  
+   formal_parameter_section  
+   formal_parameter_list ; formal_parameter_section  
+
+
+formal_parameter_section:  
+   parameterid_list : typeid 
+   var parameterid_list : typeid  
+   procedure identifier parametersopt 
+   function identifier parametersopt : typeid 
+
+
+parameterid_list:  
+   identifier  
+   parameterid_list , identifier  
+
+
+statement_list:  
+   statement  
+   statement_list ; statement  
+
+
+statement:  
+   empty  
+   variable := expression  
+   begin statement_list end  
+   if expression then statement 
+   if expression then statement else statement  
+   case expression of case_list end  
+   while expression do statement  
+   repeat statement_list until expression  
+   for varid := for_list do statement  
+   procid  
+   procid ( expression_list )  
+   goto label 
+   with record_variable_list do statement  
+   label : statement  
+
+
+variable:  
+   identifier  
+   variable [ subscript_list ]  
+   variable . fieldid  
+   variable ^  
+
+
+subscript_list:  
+   expression  
+   subscript_list , expression  
+
+
+case_list:  
+   case_label_list : statement  
+   case_list ; case_label_list : statement  
+
+
+for_list:  
+   expression to expression  
+   expression downto expression  
+
+
+expression_list:  
+   expression  
+   expression_list , expression  
+
+
+label:  
+   unsigned_integer 
+
+
+record_variable_list:  
+   variable  
+   record_variable_list , variable  
+
+
+expression: 
+   expression relational_op additive_expression 
+   additive_expression  
+
+
+relational_op: one of 
+   <  <=  =  <>  =>  > 
+
+
+additive_expression: 
+   additive_expression additive_op multiplicative_expression 
+   multiplicative_expression  
+
+
+additive_op: one of 
+   +  _  or 
+
+
+multiplicative_expression: 
+   multiplicative_expression multiplicative_op unary_expression 
+   unary_expression  
+
+
+multiplicative_op: one of 
+   *  /  div  mod  and  in 
+
+
+unary_expression: 
+   unary_op unary_expression  
+   primary_expression  
+
+
+unary_op:  one of 
+   +  _  not 
+
+
+primary_expression:  
+   variable  
+   unsigned_integer  
+   unsigned_real  
+   string  
+   nil  
+   funcid ( expression_list )  
+   [ element_list ]  
+   ( expression )  
+
+
+element_list:  
+   empty  
+   element  
+   element_list , element  
+
+
+element:  
+   expression  
+   expression ... expression  
+
+
+constid:  
+   identifier  
+
+
+typeid:  
+   identifier  
+
+
+funcid: 
+   identifier  
+
+
+procid:  
+   identifier  
+
+
+fieldid:  
+   identifier   
+
+  
+varid: 
+   identifier  
+
+
+empty: 
+

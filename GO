@@ -1,0 +1,5 @@
+# Runs a local web browser serving files from this directory. This is necessary
+# for local development because file: URLs can't do AJAX to other file: URLs.
+#
+# Hit with: http://localhost:8000/
+python -m SimpleHTTPServer

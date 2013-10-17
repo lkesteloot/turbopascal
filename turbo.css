@@ -1,0 +1,75 @@
+body {
+    background-color: #333;
+}
+
+@font-face {
+    /* http://www.dafont.com/nouveau-ibm.font */
+    font-family: "Nouveau IBM";
+    src: url("Nouveau_IBM.ttf");
+}
+
+#canvas {
+    width: 1280px;
+    height: 700px;
+    width: 640px;
+    height: 350px;
+    background-color: black;
+    display: none;
+}
+
+.debug-output {
+    display: none;
+    padding: 10px;
+    background-color: #ccc;
+}
+
+#monitor {
+    margin: 60px auto 0 auto;
+    padding: 24px 30px;
+    border-radius: 8px;
+    background-color: black;
+    width: 640px;
+    height: 350px;
+}
+
+#screen {
+    margin: 0;
+    padding: 0;
+    font-family: "Nouveau IBM", monospace;
+    font-size: 12pt;
+    /* The font naturally wants 16px here, but the PC had 14px. */
+    line-height: 14px;
+    /* The font naturally wants 9px wide characters, but the PC had 8px. */
+    letter-spacing: -1px;
+    font-smooth: never;
+    -webkit-font-smoothing: none;
+    color: #CCC;
+    width: 640px; /* 8x80 */
+    height: 350px; /* 14x25 */
+    overflow: scroll;
+}
+
+#screen .bold {
+    color: yellow;
+}
+
+#screen .cursor {
+    border-bottom: 3px solid #888;
+}
+
+#screen .cursor.off {
+    border-bottom: 3px solid black;
+}
+
+#attribution {
+    font-family: sans-serif;
+    font-size: 10pt;
+    width: 700px;
+    margin: 10px auto;
+    text-align: right;
+    color: #111;
+}
+
+#attribution a {
+    color: #111;
+}

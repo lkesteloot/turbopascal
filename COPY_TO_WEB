@@ -1,0 +1,3 @@
+# Copy the files necessary for running the compiler to my website directory.
+
+rsync -a --delete *.js *.html *.css vendor *.PAS *.ttf ~/website/projects/turbo_pascal_compiler/turbo_pascal/
