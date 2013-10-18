@@ -8,6 +8,12 @@ define(["jquery"], function ($) {
         // Queue of characters waiting to be read. The most recent character is last.
         this.queue = [];
 
+        // Whether to suppress the keys. This is enabled if we want to avoid
+        // backspace going to the previous page in the browser or otherwise
+        // doing what the browser would do. But when we're in a browser text
+        // input box, we need the backspace key and others to go there.
+        this.suppressKeys = true;
+
         // Register for keystrokes anywhere in the page.
         var self = this;
         $("body").keydown(function (event) {
@@ -21,6 +27,11 @@ define(["jquery"], function ($) {
     // is passed nothing -- it must use readKey() to get the key.
     Keyboard.prototype.setListener = function (listener) {
         this.listener = listener;
+    };
+
+    // Whether to suppress the keys.
+    Keyboard.prototype.setSuppressKeys = function (suppressKeys) {
+        this.suppressKeys = suppressKeys;
     };
 
     // This function simulates the KeyPressed function in Turbo Pascal. It
@@ -115,9 +126,6 @@ define(["jquery"], function ($) {
         } else if (which === 8) {
             // Backspace.
             key = String.fromCharCode(which);
-
-            // Don't go back to previous page.
-            event.preventDefault();
         } else if (which === 187) {
             // Equal.
             key = shifted ? "+" : "=";
@@ -169,6 +177,14 @@ define(["jquery"], function ($) {
         } else {
             // Ignore.
             key = "";
+        }
+
+        // See if we're being modified (e.g., Command-R to refresh page).
+        var modifierKeys = event.altKey || event.metaKey || event.ctrlKey;
+
+        // Never suppress modified keys.
+        if (this.suppressKeys && !modifierKeys) {
+            event.preventDefault();
         }
 
         return key;

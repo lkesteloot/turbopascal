@@ -581,8 +581,6 @@ define(["Node"], function (Node) {
                                       [Node.integerType, Node.integerType, Node.stringType],
                                       function (ctl, x, y, text) {
 
-            // Not implemented.
-            console.log("Writing text \"" + text + "\"");
             gCtx.fillStyle = COLORS[gCurrentColor];
             var metrics = gCtx.measureText(text);
             gCtx.font = (gTextSize*8) + "px sans-serif";

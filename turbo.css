@@ -9,8 +9,6 @@ body {
 }
 
 #canvas {
-    width: 1280px;
-    height: 700px;
     width: 640px;
     height: 350px;
     background-color: black;
@@ -32,9 +30,10 @@ body {
     height: 350px;
 }
 
-#screen {
+#screen, #editor {
     margin: 0;
     padding: 0;
+    border: 0;
     font-family: "Nouveau IBM", monospace;
     font-size: 12pt;
     /* The font naturally wants 16px here, but the PC had 14px. */
@@ -44,9 +43,25 @@ body {
     font-smooth: never;
     -webkit-font-smoothing: none;
     color: #CCC;
+    background-color: black;
     width: 640px; /* 8x80 */
     height: 350px; /* 14x25 */
+}
+
+#screen {
     overflow: scroll;
+}
+
+#editor {
+    display: none;
+    /* Prohibit resizing by user. */
+    resize: none;
+}
+
+#editor:focus {
+    /* Remove blue glow around focused text area. */
+    outline: 0px none transparent;
+    -moz-appearance: none;
 }
 
 #screen .bold {
@@ -61,11 +76,24 @@ body {
     border-bottom: 3px solid black;
 }
 
-#attribution {
+#belowMenu {
     font-family: sans-serif;
     font-size: 10pt;
     width: 700px;
     margin: 10px auto;
+}
+
+#closeEditor {
+    text-align: left;
+    display: none;
+    color: #999;
+}
+
+#closeEditor a {
+    color: #999;
+}
+
+#attribution {
     text-align: right;
     color: #111;
 }

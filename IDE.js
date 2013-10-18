@@ -21,6 +21,7 @@ define(["Stream", "Token", "Lexer", "CommentStripper", "Parser",
     var INPUT_MENU = 0;
     var INPUT_STRING = 1;
     var INPUT_RUNNING = 2;
+    var INPUT_EDITOR = 3;
 
     var IDE = function (screen, keyboard) {
         this.screen = screen;
@@ -41,12 +42,28 @@ define(["Stream", "Token", "Lexer", "CommentStripper", "Parser",
         // The actual text of the program in memory.
         this.source = "";
 
+        // Shut down the editor when the user clicks on the "Close editor" link.
         var self = this;
+        $("#closeEditor").click(function (event) {
+            event.preventDefault();
+            self._closeEditor();
+        });
+
         this.keyboard.setListener(function () {
-            // Only pull keys out if we're not running a program.
-            while (self.inputMode !== INPUT_RUNNING && keyboard.keyPressed()) {
-                var ch = keyboard.readKey();
-                self._gotKey(ch);
+            if (self.inputMode === INPUT_RUNNING) {
+                // If we're running a program, do nothing, the program will read the keys
+                // out of the queue.
+            } else {
+                // Only read a key if one's available (which it should be if we're here).
+                while (keyboard.keyPressed()) {
+                    // Pull the key out of the queue.
+                    var ch = keyboard.readKey();
+
+                    // Only dispatch keys if we're in the IDE proper.
+                    if (self.inputMode === INPUT_MENU || self.inputMode === INPUT_STRING) {
+                        self._gotKey(ch);
+                    }
+                }
             }
         });
     };
@@ -119,6 +136,12 @@ define(["Stream", "Token", "Lexer", "CommentStripper", "Parser",
         this.inputMode = inputMode;
         this.inputString = "";
         this.inputCallback = inputCallback;
+
+        // Suppress it if we're not in the editor.
+        this.keyboard.setSuppressKeys(inputMode !== INPUT_EDITOR);
+
+        // Show "Close editor" if we're editing.
+        $("#closeEditor").toggle(inputMode === INPUT_EDITOR);
     };
 
     // Print the menu prompt.
@@ -178,6 +201,10 @@ define(["Stream", "Token", "Lexer", "CommentStripper", "Parser",
                 this._dir();
                 break;
 
+            case "E":
+                this._edit();
+                break;
+
             case "R":
                 this._run();
                 break;
@@ -206,6 +233,25 @@ define(["Stream", "Token", "Lexer", "CommentStripper", "Parser",
             }
         }
         this.printPrompt();
+    };
+
+    // Pop up the editor.
+    IDE.prototype._edit = function () {
+        var $editor = $("#editor");
+        $("#screen").hide();
+        $editor.show();
+        $editor.val(this.source);
+        $editor.focus();
+        this._setInputMode(INPUT_EDITOR);
+    };
+
+    // End editing.
+    IDE.prototype._closeEditor = function () {
+        var $editor = $("#editor");
+        this.source = $editor.val();
+        $editor.hide();
+        $("#screen").show();
+        this.printMenu();
     };
 
     // Run the program.

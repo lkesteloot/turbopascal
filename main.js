@@ -3,7 +3,7 @@
 'use strict';
 
 require.config({
-    /// urlArgs: "bust=" + (new Date()).getTime(),
+    urlArgs: "bust=" + (new Date()).getTime(),
     paths: {
         "jquery": "vendor/jquery-1.10.1.min",
         "underscore": "vendor/underscore-1.5.2.min"
