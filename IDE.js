@@ -213,11 +213,24 @@ define(["Stream", "Token", "Lexer", "CommentStripper", "Parser",
                 this._workFile();
                 break;
 
+            case "X":
+                this._debug();
+                break;
+
             default:
                 this.screen.print("Command ");
                 this.screen.printBold(ch);
-                this.screen.print(" is not implemented.");
-                this.screen.newLine();
+                this.screen.print(" is not implemented. Try ");
+                this.screen.printBold("D");
+                this.screen.print(", ");
+                this.screen.printBold("E");
+                this.screen.print(", ");
+                this.screen.printBold("R");
+                this.screen.print(", ");
+                this.screen.printBold("W");
+                this.screen.print(", or ");
+                this.screen.printBold("X");
+                this.screen.print(".");
                 this.printPrompt();
                 break;
         }
@@ -259,7 +272,7 @@ define(["Stream", "Token", "Lexer", "CommentStripper", "Parser",
         var self = this;
 
         if (this.source === "") {
-            this.screen.printBold("Must load program first.");
+            this.screen.print("Must load program first.");
             this.screen.newLine();
             this.printPrompt();
             return;
@@ -362,6 +375,14 @@ define(["Stream", "Token", "Lexer", "CommentStripper", "Parser",
                 });
             }
         });
+    };
+
+    // Toggle debug information.
+    IDE.prototype._debug = function () {
+        $(".debug-output").toggle();
+        this.screen.print("Toggling debug information.");
+        this.screen.newLine();
+        this.printPrompt();
     };
 
     return IDE;
