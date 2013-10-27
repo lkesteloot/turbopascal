@@ -36,7 +36,33 @@ define(function () {
         // Wait until the screen has laid itself out, then scroll to the bottom.
         var self = this;
         setTimeout(function () {
-            self.$screen[0].scrollTop = self.$screen[0].scrollHeight;
+            // Scroll up.
+            while (true) {
+                // Find location of cursor (which we assume is the bottom of the text) and
+                // bottom of the screen.
+                var screenRect = self.$screen[0].getBoundingClientRect();
+                var cursor = self.$screen.find(".cursor")[0];
+                if (!cursor) {
+                    break;
+                }
+                var cursorRect = self.$screen.find(".cursor")[0].getBoundingClientRect();
+
+                // Scroll up if necessary.
+                if (cursorRect.bottom > screenRect.bottom) {
+                    // Remove first line.
+                    var html = self.$screen.html();
+                    var i = html.indexOf("<br>");
+                    if (i >= 0) {
+                        html = html.slice(i + 4);
+                    } else {
+                        // Shouldn't happen.
+                        break;
+                    }
+                    self.$screen.html(html);
+                } else {
+                    break;
+                }
+            }
         }, 0);
     };
     Screen.prototype.removeLastChar = function () {

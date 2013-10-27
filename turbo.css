@@ -49,7 +49,7 @@ body {
 }
 
 #screen {
-    overflow: scroll;
+    overflow: hidden;
 }
 
 #editor {
