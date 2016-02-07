@@ -115,6 +115,7 @@ define(["utils", "Token", "PascalError"], function (utils, Token, PascalError) {
                 // part of this token anymore.
                 var value = "";
                 var sawDecimalPoint = ch === ".";
+                var sawExp = ch === 'E';
                 while (true) {
                     value += ch;
                     ch = this.stream.peek();
@@ -139,10 +140,23 @@ define(["utils", "Token", "PascalError"], function (utils, Token, PascalError) {
                             // Allow one decimal point.
                             sawDecimalPoint = true;
                         }
+                    }else if(ch.toLowerCase() === 'e'){
+                        value += this.stream.next();
+                        nextCh = this.stream.peek();
+                        if(nextCh === '+' || nextCh === '-' || utils.isDigit(nextCh))
+                            value += this.stream.next();
+                        else
+                            throw new Error('Unexpected character ' + nextCh + ' while reading exponential form');
+                        while (true){
+                            nextCh = this.stream.peek();
+                            if(utils.isDigit(nextCh))
+                                value += this.stream.next();
+                            else
+                                return new Token(parseFloat(value).toString(), Token.NUMBER);
+                        }
                     } else if (!utils.isDigit(ch)) {
                         break;
                     }
-                    // XXX Need to parse scientific notation.
                     this.stream.next();
                 }
                 token = new Token(value, Token.NUMBER);
