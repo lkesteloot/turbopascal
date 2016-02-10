@@ -115,14 +115,15 @@ define(["utils", "Token", "PascalError"], function (utils, Token, PascalError) {
                 // part of this token anymore.
                 var value = "";
                 var sawDecimalPoint = ch === ".";
-                var sawExp = ch === 'E';
+                var sawExp = false;
+                var justSawExp = false;
                 while (true) {
                     value += ch;
                     ch = this.stream.peek();
                     if (ch === -1) {
                         break;
                     }
-                    if (ch === ".") {
+                    if (ch === "." && !sawExp) {
                         // This may be a decimal point, but it may be the start
                         // of a ".." symbol. Peek twice and push back.
                         this.stream.next();
@@ -140,19 +141,20 @@ define(["utils", "Token", "PascalError"], function (utils, Token, PascalError) {
                             // Allow one decimal point.
                             sawDecimalPoint = true;
                         }
-                    }else if(ch.toLowerCase() === 'e'){
-                        value += this.stream.next();
-                        nextCh = this.stream.peek();
-                        if(nextCh === '+' || nextCh === '-' || utils.isDigit(nextCh))
-                            value += this.stream.next();
-                        else
-                            throw new Error('Unexpected character ' + nextCh + ' while reading exponential form');
-                        while (true){
-                            nextCh = this.stream.peek();
-                            if(utils.isDigit(nextCh))
-                                value += this.stream.next();
-                            else
-                                return new Token(parseFloat(value).toString(), Token.NUMBER);
+                    } else if (ch.toLowerCase() === 'e' && !sawExp) {
+                        // Start exponential section.
+                        sawExp = true;
+                        justSawExp = true;
+                    } else if (justSawExp) {
+                        if (ch === '+' || ch === '-' || utils.isDigit(ch)) {
+                            // All good, this is required after "e".
+                            justSawExp = false;
+                        } else {
+                            // Not allowed after "e".
+                            token = new Token(value + ch, Token.NUMBER);
+                            token.lineNumber = lineNumber;
+                            throw new PascalError(token, "Unexpected character \"" + ch +
+                                            "\" while reading exponential form");
                         }
                     } else if (!utils.isDigit(ch)) {
                         break;
