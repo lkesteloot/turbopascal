@@ -63,6 +63,11 @@ define(["Bytecode", "Node", "inst", "PascalError"],
                             case inst.R:
                                 opcode = inst.LVR;
                                 break;
+                            case inst.S:
+                                // A string is not a character, but there's no opcode
+                                // for loading a string. Re-use LVC.
+                                opcode = inst.LVC;
+                                break;
                             default:
                                 throw new PascalError(node.token, "can't make code to get " +
                                                      symbolLookup.symbol.type.print());
