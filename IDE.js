@@ -327,6 +327,13 @@ define(["Stream", "Token", "Lexer", "CommentStripper", "Parser",
                 self.screen.print(line);
                 self.screen.newLine();
             });
+            machine.setInputCallback(function (callback) {
+                self.screen.addCursor();
+                self._setInputMode(INPUT_STRING, function (line) {
+                    self._setInputMode(INPUT_RUNNING);
+                    callback(line);
+                });
+            });
 
             this._setInputMode(INPUT_RUNNING);
             machine.run();

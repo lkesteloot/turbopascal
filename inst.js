@@ -171,7 +171,7 @@ define(["PascalError"], function (PascalError) {
             return this.opcodeToName[opcode] + " " + operand1 + " " + operand2;
         },
 
-        // Converts a type code like inst.I to "integer", or null if not valid.
+        // Converts a type code like inst.I to "integer", or throw if not valid.
         typeCodeToName: function (typeCode) {
             switch (typeCode) {
                 case this.A:

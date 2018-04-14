@@ -8,4 +8,6 @@ See the [full write-up](http://www.teamten.com/lawrence/projects/turbo_pascal_co
 To run it locally, run the "GO" script to start a web server and go to
 http://localhost:8000
 
+Go to http://localhost:8000/unit.html to run the unit tests.
+
 See the LICENSE file for the BSD 2-clause license.

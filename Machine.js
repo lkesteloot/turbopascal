@@ -54,35 +54,68 @@ define(["inst", "PascalError", "utils"], function (inst, PascalError, utils) {
         // line of output, and the line is the only parameter.
         this.outputCallback = null;
 
+        // Callback that gets a line of input from the user. It is called with
+        // a function that will be called with the line of input.
+        this.inputCallback = null;
+
         // The number of ms that the program is expecting us to delay now.
         this.pendingDelay = 0;
 
         // Control object for native functions to manipulate this machine.
         var self = this;
         this.control = {
+            // Stop the machine.
             stop: function () {
                 self.stopProgram();
             },
+            // Suspend the machine (stop processing instructions).
+            suspend: function () {
+                self.state = Machine.STATE_SUSPENDED;
+            },
+            // Resume the machine (un-suspend).
+            resume: function () {
+                self.resume();
+            },
+            // Wait "ms" milliseconds.
             delay: function (ms) {
                 self.pendingDelay = ms;
             },
+            // Write the line to the output.
             writeln: function (line) {
                 if (self.outputCallback !== null) {
                     self.outputCallback(line);
                 }
             },
+            // Read a line from the user. The parameter is a function that
+            // will be called with the line. The machine must first be suspended.
+            readln: function (callback) {
+                if (self.inputCallback !== null) {
+                    self.inputCallback(callback);
+                } else {
+                    callback("no input");
+                }
+            },
+            // Read a value from memory.
             readDstore: function (address) {
                 return self.dstore[address];
             },
+            // Write a value to memory.
             writeDstore: function (address, value) {
                 self.dstore[address] = value;
             },
+            // Push a value onto the stack.
+            push: function (value) {
+                self._push(value);
+            },
+            // Allocate some memory from the heap.
             malloc: function (size) {
                 return self._malloc(size);
             },
+            // Free some memory from the heap.
             free: function (p) {
                 return self._free(p);
             },
+            // Check whether a key has been pressed.
             keyPressed: function () {
                 if (self.keyboard) {
                     return self.keyboard.keyPressed();
@@ -90,6 +123,7 @@ define(["inst", "PascalError", "utils"], function (inst, PascalError, utils) {
                     return false;
                 }
             },
+            // Read a key from the keyboard, or 0 for none.
             readKey: function () {
                 if (self.keyboard) {
                     return self.keyboard.readKey();
@@ -103,6 +137,7 @@ define(["inst", "PascalError", "utils"], function (inst, PascalError, utils) {
     // Various machine states.
     Machine.STATE_STOPPED = 0;
     Machine.STATE_RUNNING = 1;
+    Machine.STATE_SUSPENDED = 2;
 
     // Run the bytecode.
     Machine.prototype.run = function () {
@@ -110,21 +145,33 @@ define(["inst", "PascalError", "utils"], function (inst, PascalError, utils) {
         this._reset();
 
         // Start the machine.
-        this.state = Machine.STATE_RUNNING;
         this.startTime = new Date().getTime();
 
+        this.resume();
+    };
+
+    // Continue running the program.
+    Machine.prototype.resume = function () {
         // Run the program.
+        this.state = Machine.STATE_RUNNING;
         this._dumpState();
 
+        // Define a function that will run a finite number of instructions,
+        // then temporarily return control to the browser for display update
+        // and input processing.
         var self = this;
         var stepAndTimeout = function () {
             self.step(100000);
+
+            // If we're still running, schedule another brief run.
             if (self.state === Machine.STATE_RUNNING) {
                 var delay = self.pendingDelay;
                 self.pendingDelay = 0;
                 setTimeout(stepAndTimeout, delay);
             }
         };
+
+        // Kick it off.
         stepAndTimeout();
     };
 
@@ -133,18 +180,23 @@ define(["inst", "PascalError", "utils"], function (inst, PascalError, utils) {
         for (var i = 0; i < count && this.state === Machine.STATE_RUNNING &&
              this.pendingDelay === 0; i++) {
 
-            try {
-                this._executeInstruction();
-            } catch (e) {
-                if (e instanceof PascalError) {
-                    console.log(e.getMessage());
-                }
-                console.log(e.stack);
-                console.log(this._getState());
-                this.stopProgram();
-            }
-            this._dumpState();
+            this.stepOnce();
         }
+    };
+
+    // Step one instruction. The machine *must* be running.
+    Machine.prototype.stepOnce = function () {
+        try {
+            this._executeInstruction();
+        } catch (e) {
+            if (e instanceof PascalError) {
+                console.log(e.getMessage());
+            }
+            console.log(e.stack);
+            console.log(this._getState());
+            this.stopProgram();
+        }
+        this._dumpState();
     };
 
     // Set a callback for debugging. The callback is called with a string that should
@@ -163,6 +215,12 @@ define(["inst", "PascalError", "utils"], function (inst, PascalError, utils) {
     // write.
     Machine.prototype.setOutputCallback = function (outputCallback) {
         this.outputCallback = outputCallback;
+    };
+
+    // Set a callback for standard input. The callback is called with a function
+    // that takes the line that was entered.
+    Machine.prototype.setInputCallback = function (inputCallback) {
+        this.inputCallback = inputCallback;
     };
 
     // Dump the state of the machine to the debug callback.
@@ -313,11 +371,16 @@ define(["inst", "PascalError", "utils"], function (inst, PascalError, utils) {
                 // control this machine.
                 parameters.unshift(this.control);
 
+                // Call the built-in function.
                 var returnValue = nativeProcedure.fn.apply(null, parameters);
 
-                // Push result if we're a function.
-                if (!nativeProcedure.returnType.isSimpleType(inst.P)) {
-                    this._push(returnValue);
+                // See if we're still running. The function might have stopped
+                // or suspended us.
+                if (this.state === Machine.STATE_RUNNING) {
+                    // Push result if we're a function.
+                    if (!nativeProcedure.returnType.isSimpleType(inst.P)) {
+                        this._push(returnValue);
+                    }
                 }
                 break;
             case inst.ENT:

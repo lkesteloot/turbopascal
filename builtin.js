@@ -76,6 +76,19 @@ define(["Node", "Token", "inst"], function (Node, Token, inst) {
                 }
                 ctl.writeln(elements.join(" "));
             });
+            symbolTable.addNativeFunction("ReadLn", Node.stringType, [], function (ctl) {
+                // Suspend the machine so that the browser can get keys to us.
+                ctl.suspend();
+
+                // Ask the IDE to read a line for us.
+                ctl.readln(function (line) {
+                    ctl.push(line);
+                    ctl.resume();
+                });
+
+                // We're a function, so we should return something, but we've
+                // suspended the machine, so it doesn't matter.
+            });
             symbolTable.addNativeFunction("Halt", Node.voidType, [], function (ctl) {
                 // Halt VM.
                 ctl.stop();
