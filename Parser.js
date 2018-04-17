@@ -1062,9 +1062,16 @@ define(["Token", "Node", "PascalError", "inst", "SymbolTable", "Symbol", "module
             // String literal.
             token = this.lexer.next();
             node = new Node(Node.STRING, token);
-            node.expressionType = new Node(Node.SIMPLE_TYPE, token, {
-                typeCode: inst.S
-            });
+			var v = node.token.value;
+			
+           // String literal of length 0 o 1 is a Char
+            if (v.length <= 1) {
+                typeCode = inst.C;
+            } else {
+                typeCode = inst.S;
+            }
+			node.expressionType = new Node(Node.SIMPLE_TYPE, token, { typeCode: typeCode });
+
         } else if (token.tokenType === Token.IDENTIFIER) {
             // Parse a variable (identifier, array dereference, etc.).
             node = this._parseVariable(symbolTable);

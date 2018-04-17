@@ -710,12 +710,11 @@ define(["inst", "PascalError", "Token", "utils"], function (inst, PascalError, T
         if (type.nodeType === Node.SIMPLE_TYPE) {
             if (type.typeCode !== nodeType.typeCode) {
                 // They're different simple types.
-                var typeCode = type.typeCode;
-                var nodeTypeCode = nodeType.typeCode;
+                var typeCode = type.typeCode;         // To Type
+                var nodeTypeCode = nodeType.typeCode; // From Type
 
                 if (typeCode === inst.A || nodeTypeCode === inst.A ||
                     typeCode === inst.B || nodeTypeCode === inst.B ||
-                    typeCode === inst.S || nodeTypeCode === inst.S ||
                     typeCode === inst.T || nodeTypeCode === inst.T ||
                     typeCode === inst.P || nodeTypeCode === inst.P ||
                     typeCode === inst.X || nodeTypeCode === inst.X) {
@@ -726,6 +725,11 @@ define(["inst", "PascalError", "Token", "utils"], function (inst, PascalError, T
                                          " to " + inst.typeCodeToName(typeCode));
                 }
 
+				// Cast Char to String, just return the same node 
+				if (typeCode === inst.S && nodeTypeCode === inst.C) {
+					return this;
+				}
+					
                 // Can always cast to a real.
                 if (typeCode === inst.R ||
                     (typeCode === inst.I && nodeTypeCode !== inst.R)) {
