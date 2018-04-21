@@ -374,16 +374,17 @@
                 WriteLn(s, 'world');
             end.
         </script>
+
         <script id="char_variable" type="text/pascal" data-expected="C S C">
             program TestProgram;
-            var c: Char; 
-				s : String;
+            var c : Char;
+                s : String;
             begin
-				c := 'C';
+                c := 'C';
                 s := 'S';
                 WriteLn(c, s);
-				s:=c;
-				WriteLn(s);
+                s := c;
+                WriteLn(s);
             end.
         </script>
 

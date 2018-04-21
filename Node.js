@@ -725,11 +725,11 @@ define(["inst", "PascalError", "Token", "utils"], function (inst, PascalError, T
                                          " to " + inst.typeCodeToName(typeCode));
                 }
 
-				// Cast Char to String, just return the same node 
-				if (typeCode === inst.S && nodeTypeCode === inst.C) {
-					return this;
-				}
-					
+                // Cast Char to String, just return the same node.
+                if (typeCode === inst.S && nodeTypeCode === inst.C) {
+                    return this;
+                }
+
                 // Can always cast to a real.
                 if (typeCode === inst.R ||
                     (typeCode === inst.I && nodeTypeCode !== inst.R)) {

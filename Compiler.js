@@ -105,7 +105,7 @@ define(["Bytecode", "Node", "inst", "PascalError"],
             case Node.STRING:
                 var v = node.token.value;
                 var cindex = bytecode.addConstant(v);
-				bytecode.add(inst.LDC, inst.S, cindex, "string '" + v + "'");
+                bytecode.add(inst.LDC, inst.S, cindex, "string '" + v + "'");
                 break;
             case Node.BOOLEAN:
                 var v = node.token.value;

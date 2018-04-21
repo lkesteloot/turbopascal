@@ -1059,19 +1059,15 @@ define(["Token", "Node", "PascalError", "inst", "SymbolTable", "Symbol", "module
                 typeCode: typeCode
             });
         } else if (token.tokenType === Token.STRING) {
-            // String literal.
+            // String or character literal.
             token = this.lexer.next();
             node = new Node(Node.STRING, token);
-			var v = node.token.value;
-			
-           // String literal of length 0 o 1 is a Char
-            if (v.length <= 1) {
-                typeCode = inst.C;
-            } else {
-                typeCode = inst.S;
-            }
-			node.expressionType = new Node(Node.SIMPLE_TYPE, token, { typeCode: typeCode });
+            var v = node.token.value;
 
+            node.expressionType = new Node(Node.SIMPLE_TYPE, token, {
+                // String literal of length 1 is a Char.
+                typeCode: v.length === 1 ? inst.C : inst.S
+            });
         } else if (token.tokenType === Token.IDENTIFIER) {
             // Parse a variable (identifier, array dereference, etc.).
             node = this._parseVariable(symbolTable);
